@@ -39,3 +39,11 @@ class ProfileDetail(generics.RetrieveUpdateAPIView):
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def delete(self, request, *args, **kwargs):
+        """
+        Handle DELETE requests to delete the profile.
+        """
+        profile = self.get_object()
+        profile.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
