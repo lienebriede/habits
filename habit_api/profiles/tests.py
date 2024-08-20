@@ -23,6 +23,14 @@ class ProfileDetailTests(APITestCase):
         self.client.login(username='tuser', password='tpass')
         self.profile_url = '/profile/'
 
+    def test_get_profile(self):
+        """
+        Ensure that the profile is retrieved correctly and the response is 200 status code.
+        """
+        response = self.client.get('/profile/')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['name'], '')
+
     def test_get_profile_not_found(self):
         """
         Ensure that a 404 status code is returned when the profile does not exist.
@@ -39,3 +47,17 @@ class ProfileDetailTests(APITestCase):
         response = self.client.delete('/profile/')
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertFalse(Profile.objects.filter(owner=self.user).exists())
+
+    def test_update_profile(self):
+        """
+        Ensure that the profile can be updated correctly and the response is 200 status code.
+        """
+        data = {
+            'name': 'New name'
+        }
+        response = self.client.put('/profile/', data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        updated_profile = Profile.objects.get(owner=self.user)
+        self.assertEqual(updated_profile.name, 'New name')
+        self.assertEqual(response.data['name'], 'New name')
+        
