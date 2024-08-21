@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from .models import Habit
 
-class ProfileSerializer(serializers.ModelSerializer):
+class HabitSerializer(serializers.ModelSerializer):
     owner = serializers.ReadOnlyField(source='owner.username')
 
     class Meta:
