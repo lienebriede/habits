@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'profiles',
     'habits',
+    'couplings',
 ]
 
 CSRF_TRUSTED_ORIGINS = [
