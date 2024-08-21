@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'profiles',
+    'habits',
 ]
 
 CSRF_TRUSTED_ORIGINS = [
