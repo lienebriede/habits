@@ -94,3 +94,41 @@ class CouplingTests(APITestCase):
         response = self.client.delete(self.coupling_detail_url, format='json')
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertEqual(Coupling.objects.count(), 0)
+
+    def test_cannot_modify_others_coupling(self):
+        """
+        Ensure that users cannot modify couplings owned by others.
+        """
+        # Log in as user2
+        self.client.logout()
+        self.client.login(username='user2', password='password2')
+
+        # Attempt to update the coupling owned by user1 (self.coupling)
+        update_data = {
+            'habit1': self.habit1.id,
+            'habit2': self.habit3.id
+        }
+        
+        url = self.coupling_detail_url
+        response = self.client.put(url, update_data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.coupling.refresh_from_db()
+        self.assertEqual(self.coupling.habit1, self.habit1)
+        self.assertEqual(self.coupling.habit2, self.habit2)
+
+    def test_cannot_delete_others_coupling(self):
+        """
+        Ensure that users cannot delete couplings owned by others.
+        """
+        self.client.logout()
+        self.client.login(username='user2', password='password2')
+
+        # Create a coupling with user2
+        user2_coupling = Coupling.objects.create(owner=self.user2, habit1=self.habit1, habit2=self.habit2)
+
+        # Attempt to delete the coupling owned by user1
+        url = f'{self.coupling_list_url}{self.coupling.id}/'
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+        
