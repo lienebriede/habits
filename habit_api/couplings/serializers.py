@@ -6,4 +6,4 @@ class CouplingSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Coupling
-        fields = ['id', 'habit1', 'habit2', 'created_at']
+        fields = ['id', 'owner', 'habit1', 'habit2', 'created_at']
