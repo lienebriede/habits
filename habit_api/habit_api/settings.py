@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     'profiles',
     'habits',
     'couplings',
+    'habit_tracking',
 ]
 
 REST_FRAMEWORK = {
