@@ -14,3 +14,13 @@ class HabitStacking(models.Model):
 
     def __str__(self):
         return f'{self.user.username} - {self.habit1} & {self.habit2}'
+
+
+class HabitStackingLog(models.Model):
+    habit_stack = models.ForeignKey(HabitStacking, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    date = models.DateField()
+    completed = models.BooleanField(default=True)
+
+    class Meta:
+        unique_together = ('habit_stack', 'user', 'date')
