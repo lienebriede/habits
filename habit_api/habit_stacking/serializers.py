@@ -22,6 +22,12 @@ class HabitStackingLogSerializer(serializers.ModelSerializer):
         user = self.context['request'].user
         if habit_stack.user != user:
             raise serializers.ValidationError("You cannot log habits that don't belong to you.")
+        if HabitStackingLog.objects.filter(
+            habit_stack=habit_stack,
+            user=user,
+            date=data.get('date')
+        ).exists():
+            raise serializers.ValidationError("Log entry already exists for this habit stack on this date.")
         return data
 
     def create(self, validated_data):
