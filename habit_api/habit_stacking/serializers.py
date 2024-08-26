@@ -10,6 +10,20 @@ class HabitStackingSerializer(serializers.ModelSerializer):
 
 
 class HabitStackingLogSerializer(serializers.ModelSerializer):
+    user = serializers.ReadOnlyField(source='user.username')
+    completed = serializers.BooleanField(default=True)
+
     class Meta:
         model = HabitStackingLog
         fields = ['habit_stack', 'user', 'date', 'completed']
+
+    def validate(self, data):
+        habit_stack = data.get('habit_stack')
+        user = self.context['request'].user
+        if habit_stack.user != user:
+            raise serializers.ValidationError("You cannot log habits that don't belong to you.")
+        return data
+
+    def create(self, validated_data):
+        validated_data.setdefault('completed', True)
+        return super().create(validated_data)
