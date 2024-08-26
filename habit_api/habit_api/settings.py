@@ -55,9 +55,6 @@ INSTALLED_APPS = [
     'rest_framework.authtoken', 
     'dj_rest_auth',
     'profiles',
-    'habits',
-    'couplings',
-    'habit_tracking',
 ]
 
 REST_FRAMEWORK = {

@@ -1,7 +1,0 @@
-from django.urls import path
-from habits import views
-
-urlpatterns = [
-    path('habits/', views.HabitList.as_view(), name='habit-list'),
-    path('habits/<int:pk>/', views.HabitDetail.as_view(), name='habit-detail'),
-]
