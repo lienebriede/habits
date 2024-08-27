@@ -1,9 +1,11 @@
 from rest_framework import generics, permissions
 from .models import HabitStacking, HabitStackingLog
 from .serializers import HabitStackingSerializer, HabitStackingLogSerializer
+from rest_framework.exceptions import PermissionDenied
 
 class HabitStackingListCreateView(generics.ListCreateAPIView):
     serializer_class = HabitStackingSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
         return HabitStacking.objects.filter(user=self.request.user)
@@ -13,6 +15,7 @@ class HabitStackingListCreateView(generics.ListCreateAPIView):
 
 class HabitStackingDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = HabitStackingSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
         return HabitStacking.objects.filter(user=self.request.user)
@@ -27,5 +30,5 @@ class HabitStackingLogListCreateView(generics.ListCreateAPIView):
     def perform_create(self, serializer):
         habit_stack = serializer.validated_data['habit_stack']
         if habit_stack.user != self.request.user:
-            raise serializers.ValidationError("You cannot log habits that don't belong to you.")
+            raise PermissionDenied("You cannot log habits that don't belong to you.")
         serializer.save(user=self.request.user)

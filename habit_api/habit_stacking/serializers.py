@@ -8,10 +8,23 @@ class HabitStackingSerializer(serializers.ModelSerializer):
         model = HabitStacking
         fields = ['id', 'user', 'habit1', 'habit2', 'goal', 'created_at']
 
+    def validate(self, data):
+        user = self.context['request'].user
+        habit1 = data.get('habit1')
+        habit2 = data.get('habit2')
+
+        if HabitStacking.objects.filter(
+            user=user,
+            habit1=habit1,
+            habit2=habit2,
+        ).exists():
+            raise serializers.ValidationError("A habit stack with these details already exists.")
+
+        return data
+
 
 class HabitStackingLogSerializer(serializers.ModelSerializer):
     user = serializers.ReadOnlyField(source='user.username')
-    completed = serializers.BooleanField(default=True)
 
     class Meta:
         model = HabitStackingLog
@@ -29,7 +42,3 @@ class HabitStackingLogSerializer(serializers.ModelSerializer):
         ).exists():
             raise serializers.ValidationError("Log entry already exists for this habit stack on this date.")
         return data
-
-    def create(self, validated_data):
-        validated_data.setdefault('completed', True)
-        return super().create(validated_data)

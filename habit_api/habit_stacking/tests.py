@@ -88,6 +88,17 @@ class HabitStackingTests(APITestCase):
         response = self.client.get(reverse('habit-stacking-detail', kwargs={'pk': self.habit_stack1.id}))
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
+    def test_create_duplicate_habit_stacking(self):
+        self.authenticate_user(self.user1)
+        data = {
+            'habit1': 'Exercise',
+            'habit2': 'Meditation',
+            'goal': 'DAILY'
+        }
+        response = self.client.post(self.habit_stack_list_create_url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("A habit stack with these details already exists.", response.data['non_field_errors'])
+
     # Tests for HabitStackingLog
     def test_create_habit_stack_log(self):
         self.authenticate_user(self.user1)
