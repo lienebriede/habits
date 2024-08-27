@@ -5,10 +5,20 @@ class HabitStacking(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     habit1 = models.CharField(max_length=255)
     habit2 = models.CharField(max_length=255)
+
+    GOAL_CHOICES = [
+        ('DAILY', 'Daily'),
+        ('NO_GOAL', 'No Goal'),
+        ('SPECIFIC_DAYS', 'Specific Days')
+    ]
     goal = models.CharField(
         max_length=20,
-        choices=[('DAILY', 'Daily'), ('NO_GOAL', 'No Goal')],
+        choices=GOAL_CHOICES,
         default='DAILY'
+    )
+    specific_days = models.ManyToManyField(
+        'Weekday',
+        blank=True
     )
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -17,6 +27,25 @@ class HabitStacking(models.Model):
 
     def __str__(self):
         return f'{self.user.username} - {self.habit1} & {self.habit2}'
+
+        
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+
+
+class Weekday(models.Model):
+    name = models.CharField(max_length=10, choices=[
+        ('Monday', 'Monday'),
+        ('Tuesday', 'Tuesday'),
+        ('Wednesday', 'Wednesday'),
+        ('Thursday', 'Thursday'),
+        ('Friday', 'Friday'),
+        ('Saturday', 'Saturday'),
+        ('Sunday', 'Sunday'),
+    ])
+    
+    def __str__(self):
+        return self.name
 
 
 class HabitStackingLog(models.Model):

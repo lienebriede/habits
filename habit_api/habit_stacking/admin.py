@@ -1,5 +1,10 @@
 from django.contrib import admin
-from .models import HabitStacking, HabitStackingLog
+from .models import HabitStacking, HabitStackingLog, Weekday
+
+@admin.register(Weekday)
+class WeekdayAdmin(admin.ModelAdmin):
+    list_display = ('name',)
+    search_fields = ('name',)
 
 @admin.register(HabitStacking)
 class HabitStackingAdmin(admin.ModelAdmin):
