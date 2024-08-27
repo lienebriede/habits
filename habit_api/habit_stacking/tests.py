@@ -2,13 +2,17 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 from django.contrib.auth.models import User
-from .models import HabitStacking, HabitStackingLog
+from .models import HabitStacking, HabitStackingLog, Weekday
 
 class HabitStackingTests(APITestCase):
     def setUp(self):
         # Create two users
         self.user1 = User.objects.create_user(username='user1', password='password123')
         self.user2 = User.objects.create_user(username='user2', password='password123')
+        
+        # Create weekdays for goal-specific tests
+        self.monday = Weekday.objects.create(name='Monday')
+        self.tuesday = Weekday.objects.create(name='Tuesday')
         
         # Create habit stacks for user1
         self.habit_stack1 = HabitStacking.objects.create(
@@ -69,7 +73,8 @@ class HabitStackingTests(APITestCase):
         self.authenticate_user(self.user1)
         data = {
             'habit1': 'Updated Exercise',
-            'habit2': 'Updated Meditation'
+            'habit2': 'Updated Meditation',
+            'goal': 'DAILY',
         }
         response = self.client.put(self.habit_stack_detail_url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -98,6 +103,73 @@ class HabitStackingTests(APITestCase):
         response = self.client.post(self.habit_stack_list_create_url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn("A habit stack with these details already exists.", response.data['non_field_errors'])
+
+    # Tests for HabitStacking with Goals
+    def test_create_habit_stacking_with_daily_goal(self):
+        self.authenticate_user(self.user1)
+        data = {
+            'habit1': 'Exercise',
+            'habit2': 'Read',
+            'goal': 'DAILY',
+            'specific_days': []
+        }
+        response = self.client.post(self.habit_stack_list_create_url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        habit_stack = HabitStacking.objects.get(id=response.data['id'])
+        self.assertEqual(habit_stack.goal, 'DAILY')
+        self.assertEqual(habit_stack.specific_days.count(), 0)
+
+    def test_create_habit_stacking_with_specific_days_goal(self):
+        self.authenticate_user(self.user1)
+        data = {
+            'habit1': 'Exercise',
+            'habit2': 'Read',
+            'goal': 'SPECIFIC_DAYS',
+            'specific_days': [self.monday.id, self.tuesday.id]
+        }
+        response = self.client.post(self.habit_stack_list_create_url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        habit_stack = HabitStacking.objects.get(id=response.data['id'])
+        self.assertEqual(habit_stack.goal, 'SPECIFIC_DAYS')
+        self.assertEqual(habit_stack.specific_days.count(), 2)
+
+    def test_create_habit_stacking_with_no_goal(self):
+        self.authenticate_user(self.user1)
+        data = {
+            'habit1': 'Exercise',
+            'habit2': 'Read',
+            'goal': 'NO_GOAL',
+            'specific_days': []
+        }
+        response = self.client.post(self.habit_stack_list_create_url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        habit_stack = HabitStacking.objects.get(id=response.data['id'])
+        self.assertEqual(habit_stack.goal, 'NO_GOAL')
+        self.assertEqual(habit_stack.specific_days.count(), 0)
+
+    def test_create_habit_stacking_with_no_goal_and_specific_days(self):
+        self.authenticate_user(self.user1)
+        data = {
+            'habit1': 'Exercise',
+            'habit2': 'Read',
+            'goal': 'NO_GOAL',
+            'specific_days': [self.monday.id, self.tuesday.id]
+        }
+        response = self.client.post(self.habit_stack_list_create_url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("Specific days should not be provided when the goal is 'DAILY' or 'NO_GOAL'", str(response.data))
+
+    def test_create_habit_stacking_with_daily_goal_and_specific_days(self):
+        self.authenticate_user(self.user1)
+        data = {
+            'habit1': 'Exercise',
+            'habit2': 'Read',
+            'goal': 'DAILY',
+            'specific_days': [self.monday.id]
+        }
+        response = self.client.post(self.habit_stack_list_create_url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("Specific days should not be provided when the goal is 'DAILY'", str(response.data))
 
     # Tests for HabitStackingLog
     def test_create_habit_stack_log(self):

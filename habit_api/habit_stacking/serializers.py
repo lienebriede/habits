@@ -20,9 +20,11 @@ class HabitStackingSerializer(serializers.ModelSerializer):
         goal = data.get('goal')
         specific_days = data.get('specific_days', [])
 
+        # Ensure habit1 and habit2 are not the same
         if habit1 == habit2:
             raise serializers.ValidationError("Habit1 and Habit2 cannot be the same.")
 
+        # Ensure no duplicate habit stacks for the same user
         if HabitStacking.objects.filter(
             user=user,
             habit1=habit1,
@@ -30,13 +32,17 @@ class HabitStackingSerializer(serializers.ModelSerializer):
         ).exists():
             raise serializers.ValidationError("A habit stack with these details already exists.")
 
-        # Ensure specific_days are provided when goal is 'SPECIFIC_DAYS'
-        if goal == 'SPECIFIC_DAYS' and not specific_days:
-            raise serializers.ValidationError("Specific days must be provided when the goal is 'Specific Days'.")
+        # Validate goal value
+        if goal not in ['DAILY', 'NO_GOAL', 'SPECIFIC_DAYS']:
+            raise serializers.ValidationError("Invalid goal value.")
 
-        # Ensure no specific_days are provided when goal is 'DAILY' or 'NO_GOAL'
-        if goal in ['DAILY', 'NO_GOAL'] and specific_days:
-            raise serializers.ValidationError("Specific days should not be provided when the goal is 'Daily' or 'No Goal'.")
+        # Specific validation rules based on goal
+        if goal == 'SPECIFIC_DAYS':
+            if not specific_days:
+                raise serializers.ValidationError("Specific days must be provided when the goal is 'SPECIFIC_DAYS'.")
+        elif goal in ['DAILY', 'NO_GOAL']:
+            if specific_days:
+                raise serializers.ValidationError("Specific days should not be provided when the goal is 'DAILY' or 'NO_GOAL'.")
 
         return data
 
@@ -61,5 +67,5 @@ class HabitStackingLogSerializer(serializers.ModelSerializer):
             date=data.get('date')
         ).exists():
             raise serializers.ValidationError("Log entry already exists for this habit stack on this date.")
-            
+
         return data
