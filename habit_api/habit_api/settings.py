@@ -33,7 +33,7 @@ DEBUG = 'DEV' in os.environ
 ALLOWED_HOSTS = [
     '8000-lienebriede-habits-j4pln3ur8hf.ws.codeinstitute-ide.net',
     'localhost',
-    'habit_api.herokuapp.com'
+    '.herokuapp.com'
 ]
 
 
