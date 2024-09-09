@@ -7,9 +7,6 @@ class Profile(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     name = models.CharField(max_length=255, blank=True)
-    image = models.ImageField(
-        upload_to='images/', default='../ftpfkey8ogd3f06e0vle', blank=True
-    )
 
     class Meta:
         ordering = ['-created_at']
