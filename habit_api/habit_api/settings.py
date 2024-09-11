@@ -111,6 +111,27 @@ if 'CLIENT_ORIGIN_DEV' in os.environ:
         rf"{extracted_url}(eu|us)\d+\w\.gitpod\.io$",
     ]
 
+else:
+    CORS_ALLOWED_ORIGINS = [
+        'https://3000-lienebriede-habitsreact-ev2smbcw16q.ws.codeinstitute-ide.net',
+    ]
+
+CORS_ALLOW_HEADERS = [
+    'content-type',
+    'accept',
+    'X-Requested-With',
+    'Authorization',
+]
+
+CORS_ALLOW_METHODS = [
+    'GET',
+    'POST',
+    'PUT',
+    'PATCH',
+    'DELETE',
+    'OPTIONS',
+]
+
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.BasicAuthentication',
