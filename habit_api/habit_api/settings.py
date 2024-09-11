@@ -14,6 +14,7 @@ import re
 from pathlib import Path
 import os
 import dj_database_url
+
 if os.path.exists('env.py'):
     import env
 
@@ -34,6 +35,7 @@ DEBUG = 'DEV' in os.environ
 ALLOWED_HOSTS = [
    os.environ.get('ALLOWED_HOST'),
    'localhost',
+   '8000-lienebriede-habits-j4pln3ur8hf.ws.codeinstitute-ide.net',
 ]
 
 
@@ -52,10 +54,15 @@ INSTALLED_APPS = [
     'rest_framework.authtoken', 
     'dj_rest_auth',
     'dj_rest_auth.registration',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
     'corsheaders',
     'profiles',
     'habit_stacking',
 ]
+
+
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [( 
@@ -93,6 +100,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'allauth.account.middleware.AccountMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
