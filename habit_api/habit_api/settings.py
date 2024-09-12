@@ -59,12 +59,15 @@ ALLOWED_HOSTS = [
    os.environ.get('ALLOWED_HOST'),
    'localhost',
    '8000-lienebriede-habits-j4pln3ur8hf.ws.codeinstitute-ide.net',
+   'habit-api-d1b10388b141.herokuapp.com'
 ]
 
 if 'CLIENT_ORIGIN_DEV' in os.environ:
     extracted_url = re.match(r'^.+-', os.environ.get('CLIENT_ORIGIN_DEV', ''), re.IGNORECASE).group(0)
     CORS_ALLOWED_ORIGIN_REGEXES = [
         rf"{extracted_url}(eu|us)\d+\w\.gitpod\.io$",
+        r"^https://3000-lienebriede-habitsreact-.*\.ws\.codeinstitute-ide\.net$",
+        r"^https://habit-api-d1b10388b141\.herokuapp\.com$",
     ]
 
 else:
