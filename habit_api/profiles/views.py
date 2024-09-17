@@ -6,7 +6,7 @@ from .models import Profile
 from .serializers import ProfileSerializer
 from habit_api.permissions import IsOwnerOrReadOnly
 
-class ProfileDetail(generics.RetrieveUpdateAPIView):
+class UserProfileView(generics.RetrieveUpdateAPIView):
     """
     Retrieve or update the profile of the currently authenticated user.
     """
@@ -30,12 +30,12 @@ class ProfileDetail(generics.RetrieveUpdateAPIView):
         except Profile.DoesNotExist:
             raise NotFound("Profile not found")
 
-    def put(self, request, *args, **kwargs):
+    def update(self, request, *args, **kwargs):
         """
-        Handle PUT requests to update the profile.
+        Handle PUT and PATCH requests to update the profile.
         """
         profile = self.get_object()
-        serializer = self.get_serializer(profile, data=request.data)
+        serializer = self.get_serializer(profile, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
         return Response(serializer.data, status=status.HTTP_200_OK)
