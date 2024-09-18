@@ -49,14 +49,28 @@ class HabitStackingSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Both habit fields cannot be empty. Provide either predefined or custom habits.")
 
 
-        # Ensure no duplicate habit stacks for the same user
-        if HabitStacking.objects.filter(
-            user=user,
-            predefined_habit1=predefined_habit1,
-            custom_habit1=custom_habit1,
-            predefined_habit2=predefined_habit2,
-            custom_habit2=custom_habit2,
-        ).exists():
+        # Get the current instance if updating
+        instance = getattr(self, 'instance', None)
+
+        # Ensure no duplicate habit stacks for the same user, but allow for different goals
+        if instance:
+            existing_habit_stacks = HabitStacking.objects.filter(
+                user=user,
+                predefined_habit1=predefined_habit1,
+                custom_habit1=custom_habit1,
+                predefined_habit2=predefined_habit2,
+                custom_habit2=custom_habit2
+            ).exclude(id=instance.id)
+        else:
+            existing_habit_stacks = HabitStacking.objects.filter(
+                user=user,
+                predefined_habit1=predefined_habit1,
+                custom_habit1=custom_habit1,
+                predefined_habit2=predefined_habit2,
+                custom_habit2=custom_habit2
+            )
+
+        if existing_habit_stacks.exists():
             raise serializers.ValidationError("A habit stack with these details already exists.")
 
         # Validate goal value
