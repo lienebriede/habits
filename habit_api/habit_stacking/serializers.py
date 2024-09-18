@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import HabitStacking, HabitStackingLog, Weekday, PredefinedHabit
 
+# Serializer for HabitStacking model
 class HabitStackingSerializer(serializers.ModelSerializer):
     user = serializers.ReadOnlyField(source='user.username')
     specific_days = serializers.PrimaryKeyRelatedField(
@@ -78,7 +79,7 @@ class HabitStackingSerializer(serializers.ModelSerializer):
 
         return data
 
-
+# Serializer for HabitStackingLog model
 class HabitStackingLogSerializer(serializers.ModelSerializer):
     user = serializers.ReadOnlyField(source='user.username')
 
@@ -101,3 +102,9 @@ class HabitStackingLogSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Log entry already exists for this habit stack on this date.")
 
         return data
+
+# Serializer for PredefinedHabit model
+class PredefinedHabitSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PredefinedHabit
+        fields = ['id', 'name']
