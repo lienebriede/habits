@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import HabitStacking, HabitStackingLog, Weekday, PredefinedHabit
+from .models import HabitStacking, HabitStackingLog, PredefinedHabit
 
 class PredefinedHabitAdmin(admin.ModelAdmin):
     list_display = ('name',)
@@ -34,11 +34,6 @@ class HabitStackingLogAdmin(admin.ModelAdmin):
     list_filter = ('completed', 'date')
     search_fields = ('habit_stack__user__username', 'date')
 
-class WeekdayAdmin(admin.ModelAdmin):
-    list_display = ('name',)
-    search_fields = ('name',)
-
 admin.site.register(PredefinedHabit, PredefinedHabitAdmin)
 admin.site.register(HabitStacking, HabitStackingAdmin)
 admin.site.register(HabitStackingLog, HabitStackingLogAdmin)
-admin.site.register(Weekday, WeekdayAdmin)

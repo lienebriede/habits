@@ -1,14 +1,9 @@
 from rest_framework import serializers
-from .models import HabitStacking, HabitStackingLog, Weekday, PredefinedHabit
+from .models import HabitStacking, HabitStackingLog, PredefinedHabit
 
 # Serializer for HabitStacking model
 class HabitStackingSerializer(serializers.ModelSerializer):
     user = serializers.ReadOnlyField(source='user.username')
-    specific_days = serializers.PrimaryKeyRelatedField(
-        many=True,
-        queryset=Weekday.objects.all(),
-        required=False
-    )
     predefined_habit1 = serializers.PrimaryKeyRelatedField(
         queryset=PredefinedHabit.objects.all(),
         required=False,
@@ -22,7 +17,7 @@ class HabitStackingSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = HabitStacking
-        fields = ['id', 'user', 'predefined_habit1', 'custom_habit1', 'predefined_habit2', 'custom_habit2', 'goal', 'specific_days', 'created_at']
+        fields = ['id', 'user', 'predefined_habit1', 'custom_habit1', 'predefined_habit2', 'custom_habit2', 'goal', 'created_at']
 
     def validate(self, data):
         user = self.context['request'].user
@@ -31,7 +26,6 @@ class HabitStackingSerializer(serializers.ModelSerializer):
         predefined_habit2 = data.get('predefined_habit2')
         custom_habit2 = data.get('custom_habit2')
         goal = data.get('goal')
-        specific_days = data.get('specific_days', [])
 
         # Validation for habit1 and habit2
         if predefined_habit1 and custom_habit1:
@@ -66,16 +60,8 @@ class HabitStackingSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("A habit stack with these details already exists.")
 
         # Validate goal value
-        if goal not in ['DAILY', 'NO_GOAL', 'SPECIFIC_DAYS']:
+        if goal not in ['DAILY', 'NO_GOAL']:
             raise serializers.ValidationError("Invalid goal value.")
-
-        # Specific validation rules based on goal
-        if goal == 'SPECIFIC_DAYS':
-            if not specific_days:
-                raise serializers.ValidationError("Specific days must be provided when the goal is 'SPECIFIC_DAYS'.")
-        elif goal in ['DAILY', 'NO_GOAL']:
-            if specific_days:
-                raise serializers.ValidationError("Specific days should not be provided when the goal is 'DAILY' or 'NO_GOAL'.")
 
         return data
 

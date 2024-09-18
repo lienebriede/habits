@@ -9,7 +9,7 @@ class HabitStackingListCreateView(generics.ListCreateAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        return HabitStacking.objects.filter(user=self.request.user)
+        return HabitStacking.objects.filter(user=self.request.user).order_by('id')
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
@@ -20,7 +20,7 @@ class HabitStackingDetailView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        return HabitStacking.objects.filter(user=self.request.user)
+        return HabitStacking.objects.filter(user=self.request.user).order_by('id')
 
 # HabitStackingLog list and create view
 class HabitStackingLogListCreateView(generics.ListCreateAPIView):
@@ -28,7 +28,7 @@ class HabitStackingLogListCreateView(generics.ListCreateAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        return HabitStackingLog.objects.filter(user=self.request.user)
+        return HabitStackingLog.objects.filter(user=self.request.user).order_by('date')
 
     def perform_create(self, serializer):
         habit_stack = serializer.validated_data['habit_stack']
@@ -38,6 +38,6 @@ class HabitStackingLogListCreateView(generics.ListCreateAPIView):
 
 # PredefinedHabit list view
 class PredefinedHabitListView(generics.ListAPIView):
-    queryset = PredefinedHabit.objects.all()
+    queryset = PredefinedHabit.objects.all().order_by('name')
     serializer_class = PredefinedHabitSerializer
     permission_classes = [permissions.IsAuthenticated]
