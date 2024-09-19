@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db import models
 from django.db.models.signals import post_save
 from django.contrib.auth.models import User
@@ -27,4 +28,39 @@ def create_profile(sender, instance, created, **kwargs):
 @receiver(post_save, sender=User)
 def save_profile(sender, instance, **kwargs):
     instance.profile.save()
+
+
+class Follow(models.Model):
+    PENDING = 'pending'
+    APPROVED = 'approved'
+    DECLINED = 'declined'
+
+    FOLLOW_STATUS_CHOICES = [
+        (PENDING, 'Pending'),
+        (APPROVED, 'Approved'),
+        (DECLINED, 'Declined'),
+    ]
+
+    follower = models.ForeignKey(
+        settings.AUTH_USER_MODEL, 
+        on_delete=models.CASCADE, 
+        related_name='following'
+    )
+    followed_user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, 
+        on_delete=models.CASCADE, 
+        related_name='followers'
+    )
+    status = models.CharField(
+        max_length=10, 
+        choices=FOLLOW_STATUS_CHOICES, 
+        default=APPROVED
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('follower', 'followed_user')
+
+    def is_approved(self):
+        return self.status == self.APPROVED
 
