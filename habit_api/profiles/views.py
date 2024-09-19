@@ -97,3 +97,24 @@ class FollowUnfollowView(generics.GenericAPIView):
             return Response({"detail": "Unfollowed successfully"}, status=status.HTTP_200_OK)
 
         return Response({"detail": "Followed successfully"}, status=status.HTTP_201_CREATED)
+
+
+class FollowersListView(generics.ListAPIView):
+    """
+    List all users following the authenticated user.
+    """
+    permission_classes = [IsAuthenticated]
+    serializer_class = FollowSerializer
+
+    def get_queryset(self):
+        return Follow.objects.filter(followed_user=self.request.user)
+
+class FollowingListView(generics.ListAPIView):
+    """
+    List all users that the authenticated user is following.
+    """
+    permission_classes = [IsAuthenticated]
+    serializer_class = FollowSerializer
+
+    def get_queryset(self):
+        return Follow.objects.filter(follower=self.request.user)
