@@ -36,13 +36,18 @@ class HabitStackingLogListCreateView(generics.ListCreateAPIView):
         if habit_stack.user != self.request.user:
             raise PermissionDenied("You cannot log habits that don't belong to you.")
 
-        # Save the habit log and create or update milestone
-        habit_log = serializer.save(user=self.request.user)
+        # Check if we are updating an existing log
+        if hasattr(serializer, 'instance') and serializer.instance:
+            # If we're updating, we can just save the existing instance
+            habit_log = serializer.save(user=self.request.user)
+            print(f"Log updated: {habit_log}")
+        else:
+            # If no instance exists, we create a new log
+            habit_log = serializer.save(user=self.request.user)
+            print(f"Log created: {habit_log}")
 
-        print(f"Log created: {habit_log}")
-
+        # Check if the habit log is completed
         if habit_log.completed:
-            print("Calling create_or_update_milestone")
             create_or_update_milestone(self.request.user, habit_stack)
 
 # PredefinedHabit list view
