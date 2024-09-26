@@ -1,4 +1,5 @@
 from rest_framework import generics, permissions
+from rest_framework.response import Response
 from .models import HabitStacking, HabitStackingLog, PredefinedHabit, Milestone
 from .serializers import HabitStackingSerializer, HabitStackingLogSerializer, PredefinedHabitSerializer, MilestoneSerializer
 from rest_framework.exceptions import PermissionDenied
@@ -22,6 +23,18 @@ class HabitStackingDetailView(generics.RetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         return HabitStacking.objects.filter(user=self.request.user).order_by('id')
+
+    def get(self, request, *args, **kwargs):
+        habit_stack = self.get_object()
+        milestones = Milestone.objects.filter(habit_stack=habit_stack).order_by('-date_achieved')
+        
+        habit_stack_data = HabitStackingSerializer(habit_stack).data
+        milestones_data = MilestoneSerializer(milestones, many=True).data
+
+        return Response({
+            'habit_stack': habit_stack_data,
+            'milestones': milestones_data,
+        })
 
 # HabitStackingLog list and create view
 class HabitStackingLogListCreateView(generics.ListCreateAPIView):
