@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import HabitStacking, HabitStackingLog, PredefinedHabit
+from .models import HabitStacking, HabitStackingLog, PredefinedHabit, Milestone
 
 # Serializer for HabitStacking model
 class HabitStackingSerializer(serializers.ModelSerializer):
@@ -108,3 +108,10 @@ class PredefinedHabitSerializer(serializers.ModelSerializer):
     class Meta:
         model = PredefinedHabit
         fields = ['id', 'name']
+
+
+# Serializer for Milestone model
+class MilestoneSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Milestone
+        fields = ['id', 'user', 'date_achieved', 'days_completed']

@@ -1,5 +1,10 @@
 from django.contrib import admin
-from .models import HabitStacking, HabitStackingLog, PredefinedHabit
+from .models import HabitStacking, HabitStackingLog, PredefinedHabit, Milestone
+
+class MilestoneAdmin(admin.ModelAdmin):
+    list_display = ('user', 'habit_stack', 'days_completed', 'date_achieved')
+    search_fields = ('user__username', 'habit_stack__custom_habit1', 'habit_stack__custom_habit2')
+    list_filter = ('user', 'date_achieved')
 
 class PredefinedHabitAdmin(admin.ModelAdmin):
     list_display = ('name',)
@@ -37,3 +42,4 @@ class HabitStackingLogAdmin(admin.ModelAdmin):
 admin.site.register(PredefinedHabit, PredefinedHabitAdmin)
 admin.site.register(HabitStacking, HabitStackingAdmin)
 admin.site.register(HabitStackingLog, HabitStackingLogAdmin)
+admin.site.register(Milestone, MilestoneAdmin)

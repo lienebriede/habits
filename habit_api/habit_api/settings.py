@@ -18,10 +18,30 @@ import dj_database_url
 if os.path.exists('env.py'):
     import env
 
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),  # Change to 'DEBUG' for more detailed output
+        },
+        'habit_stacking': {  # Replace with your app's name
+            'handlers': ['console'],
+            'level': 'DEBUG',  # or 'DEBUG'
+            'propagate': True,
+        },
+    },
+}
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [( 
@@ -55,6 +75,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = 'DEV' in os.environ
+print("DEBUG =", DEBUG)
 
 ALLOWED_HOSTS = [
    os.environ.get('ALLOWED_HOST'),
