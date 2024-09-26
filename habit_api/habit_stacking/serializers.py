@@ -117,6 +117,13 @@ class PredefinedHabitSerializer(serializers.ModelSerializer):
 
 # Serializer for Milestone model
 class MilestoneSerializer(serializers.ModelSerializer):
+    predefined_habit1 = serializers.CharField(source='habit_stack.predefined_habit1.name', allow_null=True)
+    custom_habit1 = serializers.CharField(source='habit_stack.custom_habit1', allow_null=True)
+    predefined_habit2 = serializers.CharField(source='habit_stack.predefined_habit2.name', allow_null=True)
+    custom_habit2 = serializers.CharField(source='habit_stack.custom_habit2', allow_null=True)
+
     class Meta:
         model = Milestone
-        fields = ['id', 'user', 'date_achieved', 'days_completed']
+        fields = ['id', 'user', 'habit_stack', 'date_achieved', 
+            'days_completed', 'predefined_habit1', 'custom_habit1', 
+            'predefined_habit2', 'custom_habit2']

@@ -4,6 +4,8 @@ from rest_framework.exceptions import NotFound, PermissionDenied
 from rest_framework.response import Response
 from .models import Profile, Follow
 from .serializers import ProfileSerializer, FollowSerializer
+from habit_stacking.models import Milestone
+from habit_stacking.serializers import MilestoneSerializer
 from habit_api.permissions import IsOwnerOrReadOnly
 from django.contrib.auth.models import User
 
@@ -118,3 +120,20 @@ class FollowingListView(generics.ListAPIView):
 
     def get_queryset(self):
         return Follow.objects.filter(follower=self.request.user)
+
+class FeedView(generics.ListAPIView):
+    """
+    API view to retrieve the milestones of the users the current user is following.
+    """
+    permission_classes = [IsAuthenticated]
+    serializer_class = MilestoneSerializer
+
+    def get_queryset(self):
+        # Get the list of users the current user is following with an approved follow status
+        followed_users = Follow.objects.filter(
+            follower=self.request.user, 
+            status=Follow.APPROVED
+        ).values_list('followed_user', flat=True)
+
+        # Fetch milestones for the followed users
+        return Milestone.objects.filter(user__in=followed_users).order_by('-date_achieved')

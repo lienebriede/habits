@@ -18,7 +18,7 @@ def create_or_update_milestone(user, habit_stack):
     logger.info(f"Completed logs: {completed_logs} for habit stack: {habit_stack}")
 
     # Check if it's a milestone-worthy completion (e.g., every 10 completions)
-    if completed_logs > 0 and completed_logs % 3 == 0:
+    if completed_logs > 0 and completed_logs % 10 == 0:
         milestone, created = Milestone.objects.get_or_create(
             user=user,
             habit_stack=habit_stack,
