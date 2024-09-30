@@ -75,7 +75,6 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = 'DEV' in os.environ
-print("DEBUG =", DEBUG)
 
 ALLOWED_HOSTS = [
    os.environ.get('ALLOWED_HOST'),
@@ -95,6 +94,7 @@ if 'CLIENT_ORIGIN_DEV' in os.environ:
 else:
     CORS_ALLOWED_ORIGINS = [
         'https://3000-lienebriede-habitsreact-qvvgf6yodhb.ws.codeinstitute-ide.net',
+        'https://habit-api-d1b10388b141.herokuapp.com',
     ]
 
 CORS_ALLOW_CREDENTIALS = True
@@ -121,6 +121,7 @@ INSTALLED_APPS = [
 
 CSRF_TRUSTED_ORIGINS = [
     'https://3000-lienebriede-habitsreact-qvvgf6yodhb.ws.codeinstitute-ide.net',
+    'https://8000-lienebriede-habits-j4pln3ur8hf.ws.codeinstitute-ide.net',
 ]
 
 SITE_ID = 1
