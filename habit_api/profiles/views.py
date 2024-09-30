@@ -21,7 +21,7 @@ class UserProfileView(generics.RetrieveUpdateAPIView):
         Return the profile for the currently authenticated user.
         """
         user = self.request.user
-        return Profile.objects.filter(owner=user)
+        return Profile.objects.filter(owner=self.request.user)
 
     def get_object(self):
         """
