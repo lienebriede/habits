@@ -94,7 +94,7 @@ if 'CLIENT_ORIGIN_DEV' in os.environ:
 
 else:
     CORS_ALLOWED_ORIGINS = [
-        'https://3000-lienebriede-habitsreact-ev2smbcw16q.ws.codeinstitute-ide.net',
+        'https://3000-lienebriede-habitsreact-qvvgf6yodhb.ws.codeinstitute-ide.net/',
     ]
 
 CORS_ALLOW_CREDENTIALS = True
@@ -120,7 +120,7 @@ INSTALLED_APPS = [
 
 
 CSRF_TRUSTED_ORIGINS = [
-    'https://8000-lienebriede-habits-j4pln3ur8hf.ws.codeinstitute-ide.net',
+    'https://3000-lienebriede-habitsreact-qvvgf6yodhb.ws.codeinstitute-ide.net/',
 ]
 
 SITE_ID = 1
