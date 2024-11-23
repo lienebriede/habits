@@ -18,53 +18,8 @@ import dj_database_url
 if os.path.exists('env.py'):
     import env
 
-CORS_ALLOWED_ORIGINS = [
-    "https://habit-react-aaef840da163.herokuapp.com",
-    "https://3000-lienebriede-habitsreact-qvvgf6yodhb.ws.codeinstitute-ide.net",
-]
-
-CORS_ALLOW_CREDENTIALS = True
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('SECRET_KEY')
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = 'DEV' in os.environ
-
-ALLOWED_HOSTS = [
-   os.environ.get('ALLOWED_HOST'),
-   'localhost',
-   '8000-lienebriede-habits-j4pln3ur8hf.ws.codeinstitute-ide.net',
-   'https://habit-react-aaef840da163.herokuapp.com'
-]
-
-INSTALLED_APPS = [
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-    'rest_framework',
-    'rest_framework.authtoken', 
-    'dj_rest_auth',
-    'dj_rest_auth.registration',
-    'allauth',
-    'allauth.account',
-    'allauth.socialaccount',
-    'corsheaders',
-    'profiles',
-    'habit_stacking',
-]
-
-SITE_ID = 1
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [( 
@@ -90,11 +45,64 @@ JWT_AUTH_SAMESITE = 'None'
 
 REST_AUTH_SERIALIZERS = {'USER_DETAILS_SERIALIZER': 'habit_api.serializers.CurrentUserSerializer'}
 
-CSRF_TRUSTED_ORIGINS = [
-    'https://3000-lienebriede-habitsreact-qvvgf6yodhb.ws.codeinstitute-ide.net',
-    'https://8000-lienebriede-habits-j4pln3ur8hf.ws.codeinstitute-ide.net',
-    'http://8000-lienebriede-habits-j4pln3ur8hf.ws.codeinstitute-ide.net',
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = os.environ.get('SECRET_KEY')
+
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = 'DEV' in os.environ
+
+
+ALLOWED_HOSTS = [
+   os.environ.get('ALLOWED_HOST'),
+   'localhost',
 ]
+
+if 'CLIENT_ORIGIN' in os.environ:
+    CORS_ALLOWED_ORIGINS = [
+        os.environ.get('CLIENT_ORIGIN')
+    ]
+
+if 'CLIENT_ORIGIN_DEV' in os.environ:
+    extracted_url = re.match(
+        r'^.+-', os.environ.get('CLIENT_ORIGIN_DEV', ''), re.IGNORECASE
+    ).group(0)
+    CORS_ALLOWED_ORIGIN_REGEXES = [
+        rf"{extracted_url}(eu|us)\d+\w\.gitpod\.io$",
+    ]
+
+
+CORS_ALLOW_CREDENTIALS = True
+
+
+
+
+# Quick-start development settings - unsuitable for production
+# See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
+
+
+
+
+
+INSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'rest_framework',
+    'rest_framework.authtoken', 
+    'dj_rest_auth',
+    'dj_rest_auth.registration',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'corsheaders',
+    'profiles',
+    'habit_stacking',
+]
+
+SITE_ID = 1
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
@@ -107,21 +115,11 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-if 'CLIENT_ORIGIN_DEV' in os.environ:
-    extracted_url = re.match(r'^.+-', os.environ.get('CLIENT_ORIGIN_DEV', ''), re.IGNORECASE).group(0)
-    CORS_ALLOWED_ORIGIN_REGEXES = [
-        rf"{extracted_url}(eu|us)\d+\w\.gitpod\.io$",
-        r"^https://3000-lienebriede-habitsreact-.*\.ws\.codeinstitute-ide\.net$",
-        r"^https://habit-api-d1b10388b141\.herokuapp\.com$",
-    ]
-
-else:
-    CORS_ALLOWED_ORIGINS = [
-        'https://3000-lienebriede-habitsreact-qvvgf6yodhb.ws.codeinstitute-ide.net',
-        'https://habit-api-d1b10388b141.herokuapp.com',
-    ]
-
 ROOT_URLCONF = 'habit_api.urls'
+
+
+
+
 
 TEMPLATES = [
     {
@@ -145,17 +143,14 @@ WSGI_APPLICATION = 'habit_api.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-if 'DEV' in os.environ:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
-        }
-    }
-else:
-    DATABASES = {
-        'default': dj_database_url.parse(os.environ.get("DATABASE_URL"))
-    }
+DATABASES = {
+    'default': ({
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    } if 'DEV' in os.environ else dj_database_url.parse(
+        os.environ.get('DATABASE_URL')
+    ))
+}
 
 
 # Password validation
@@ -198,7 +193,3 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-# Settings for user registration and email
-ACCOUNT_EMAIL_REQUIRED = False
-ACCOUNT_EMAIL_VERIFICATION = 'none'
