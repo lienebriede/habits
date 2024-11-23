@@ -42,7 +42,7 @@ ALLOWED_HOSTS = [
    os.environ.get('ALLOWED_HOST'),
    'localhost',
    '8000-lienebriede-habits-j4pln3ur8hf.ws.codeinstitute-ide.net',
-   'habit-api-d1b10388b141.herokuapp.com'
+   'https://habit-react-aaef840da163.herokuapp.com'
 ]
 
 INSTALLED_APPS = [
